@@ -151,7 +151,7 @@
             <form
               th:action="@{/post/{postId}/select/{commentId}(postId=${post.postId}, commentId=${comment.comment.commentId})}"
               method="post"
-              th:if="${!post.isSolved}"
+              th:if="${!post.solved}"
             >
               <button type="submit">채택하기</button>
             </form>

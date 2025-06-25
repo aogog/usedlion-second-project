@@ -31,7 +31,7 @@ public class Post {
     private String title;
     private String content;
     private int viewCnt;
-    private boolean isSolved;
+    private boolean solved;
     private LocalDateTime createdAt;
 
     @ManyToMany

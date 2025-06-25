@@ -10,6 +10,7 @@
     <form th:action="@{/post/new}" method="post" th:object="${post}">
       <p>제목: <input type="text" th:field="*{title}" /></p>
       <input type="hidden" th:field="*{postId}" />
+      <input type="hidden" th:field="*{solved}" />
       <p>내용: <textarea th:field="*{content}"></textarea></p>
       <p>태그 (최대 3개 선택):</p>
       <ul>
