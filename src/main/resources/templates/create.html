@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>게시글 작성</title>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <h1>게시글 작성</h1>
+
+    <form th:action="@{/post/new}" method="post" th:object="${post}">
+      <p>제목: <input type="text" th:field="*{title}" /></p>
+      <input type="hidden" th:field="*{postId}" />
+      <p>내용: <textarea th:field="*{content}"></textarea></p>
+      <p>태그 (최대 3개 선택):</p>
+      <ul>
+        <li th:each="tag : ${tags}">
+          <input
+            type="checkbox"
+            name="tags"
+            th:value="${tag.tagId}"
+            th:id="'tag-' + ${tag.tagId}"
+            onclick="limitTags(this)"
+            th:checked="${post.tags.contains(tag)}"
+          />
+          <label th:for="'tag-' + ${tag.tagId}" th:text="${tag.name}"
+            >태그명</label
+          >
+        </li>
+      </ul>
+      <button type="submit">저장</button>
+    </form>
+  </body>
+</html>
