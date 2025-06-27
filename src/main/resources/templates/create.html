@@ -3,6 +3,25 @@
   <head>
     <title>게시글 작성</title>
     <meta charset="UTF-8" />
+    <style>
+      #map {
+        width: 700px;
+        height: 700px;
+      }
+    </style>
+    <script>
+      function limitTags(checkbox) {
+        const checkboxes = document.querySelectorAll('input[name="tags"]');
+        const checkedCount = Array.from(checkboxes).filter(
+          (cb) => cb.checked
+        ).length;
+
+        if (checkedCount > 3) {
+          alert("태그는 최대 3개까지 선택할 수 있습니다.");
+          checkbox.checked = false;
+        }
+      }
+    </script>
   </head>
   <body>
     <h1>게시글 작성</h1>
@@ -11,6 +30,9 @@
       <p>제목: <input type="text" th:field="*{title}" /></p>
       <input type="hidden" th:field="*{postId}" />
       <input type="hidden" th:field="*{solved}" />
+      <input type="hidden" name="address" id="address" />
+      <input type="hidden" name="latitude" id="latitude" />
+      <input type="hidden" name="longitude" id="longitude" />
       <p>내용: <textarea th:field="*{content}"></textarea></p>
       <p>태그 (최대 3개 선택):</p>
       <ul>
@@ -30,5 +52,45 @@
       </ul>
       <button type="submit">저장</button>
     </form>
+    <!-- 지도 -->
+    <h2>지도</h2>
+    <div id="map"></div>
+
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=76b82f4213420a9298ccca847cdb83d1&libraries=services"></script>
+
+    <script>
+      var mapContainer = document.getElementById("map"),
+        mapOption = {
+          center: new kakao.maps.LatLng(37.5665, 126.978),
+          level: 3,
+        };
+
+      var map = new kakao.maps.Map(mapContainer, mapOption);
+      var geocoder = new kakao.maps.services.Geocoder();
+      var addressValue = document.getElementById("address");
+      var latitudeValue = document.getElementById("latitude");
+      var longitudeValue = document.getElementById("longitude");
+
+      var marker = new kakao.maps.Marker({
+        position: map.getCenter(),
+      });
+      marker.setMap(map);
+      kakao.maps.event.addListener(map, "click", function (mouseEvent) {
+        const latLng = mouseEvent.latLng;
+        latitudeValue.value = latLng.getLat();
+        longitudeValue.value = latLng.getLng();
+
+        marker.setPosition(mouseEvent.latLng);
+        var coord = new kakao.maps.LatLng(latLng.getLat(), latLng.getLng());
+        var callback = function (result, status) {
+          if (status === kakao.maps.services.Status.OK) {
+            addressValue.value = result[0].address.address_name;
+            console.log(result[0].address.address_name);
+          }
+        };
+
+        geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
+      });
+    </script>
   </body>
 </html>
