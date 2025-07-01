@@ -6,6 +6,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.gridfs.GridFSBucket;
+import com.mongodb.client.gridfs.GridFSBuckets;
 
 @Configuration
 public class MongoConfig {
@@ -15,7 +18,8 @@ public class MongoConfig {
     }
 
     @Bean
-    public MongoTemplate mongoTemplate() {
-        return new MongoTemplate(mongoClient(), "myemp");
+    public GridFSBucket gridFSBucket() {
+        MongoDatabase database = mongoClient().getDatabase("images");
+        return GridFSBuckets.create(database);
     }
 }

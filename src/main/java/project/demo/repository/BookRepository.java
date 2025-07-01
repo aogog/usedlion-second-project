@@ -7,6 +7,5 @@ import project.demo.entity.Book;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Integer> {
-    // Additional query methods can be defined here if needed
 
 }

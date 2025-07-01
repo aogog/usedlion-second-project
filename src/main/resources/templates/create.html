@@ -26,14 +26,40 @@
   <body>
     <h1>게시글 작성</h1>
 
-    <form th:action="@{/post/new}" method="post" th:object="${post}">
-      <p>제목: <input type="text" th:field="*{title}" /></p>
-      <input type="hidden" th:field="*{postId}" />
-      <input type="hidden" th:field="*{solved}" />
-      <input type="hidden" name="address" id="address" />
-      <input type="hidden" name="latitude" id="latitude" />
-      <input type="hidden" name="longitude" id="longitude" />
-      <p>내용: <textarea th:field="*{content}"></textarea></p>
+    <form th:action="@{/post/new}" enctype="multipart/form-data" method="post">
+      <p>제목: <input type="text" name="title" /></p>
+      <input
+        type="hidden"
+        name="postId"
+        th:if="${post != null}"
+        th:value="${post.postId}"
+      />
+      <p>내용: <textarea name="content"></textarea></p>
+
+      <div th:each="imgId : ${imageIds}">
+        <img th:src="@{'/images/' + ${imgId}}" alt="게시글 이미지" />
+        <input
+          type="checkbox"
+          th:id="'del-' + ${imgId}"
+          name="deleteImageIds"
+          th:value="${imgId}"
+        />
+        <label th:for="'del-' + ${imgId}">삭제</label>
+      </div>
+      <input type="hidden" name="address" id="address" th:value="${address}" />
+      <input
+        type="hidden"
+        name="latitude"
+        id="latitude"
+        th:value="${latitude}"
+      />
+      <input
+        type="hidden"
+        name="longitude"
+        id="longitude"
+        th:value="${longitude}"
+      />
+      <p>이미지: <input type="file" name="imgfile" multiple /></p>
       <p>태그 (최대 3개 선택):</p>
       <ul>
         <li th:each="tag : ${tags}">
@@ -50,47 +76,62 @@
           >
         </li>
       </ul>
+
       <button type="submit">저장</button>
+      <h2>지도</h2>
+      <div id="map"></div>
+
+      <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=76b82f4213420a9298ccca847cdb83d1&libraries=services"></script>
+
+      <script th:inline="javascript">
+        /*<![CDATA[*/
+         const latitudeFromBackend = [[${latitude}]];
+         const longitudeFromBackend = [[${longitude}]];
+         /*]]>*/
+               console.log(
+                 "Latitude from backend: " + latitudeFromBackend,
+                 "Longitude from backend: " + longitudeFromBackend
+               );
+               const center =
+                 latitudeFromBackend != null && longitudeFromBackend != null
+                   ? new kakao.maps.LatLng(latitudeFromBackend, longitudeFromBackend)
+                   : new kakao.maps.LatLng(37.5665, 126.978);
+
+               var mapContainer = document.getElementById("map"),
+                 mapOption = {
+                   center: center,
+                   level: 1,
+                 };
+
+               var map = new kakao.maps.Map(mapContainer, mapOption);
+               var geocoder = new kakao.maps.services.Geocoder();
+               var addressValue = document.getElementById("address");
+               var latitudeValue = document.getElementById("latitude");
+               var longitudeValue = document.getElementById("longitude");
+
+               var marker = new kakao.maps.Marker({
+                 position: map.getCenter(),
+               });
+               marker.setMap(map);
+               kakao.maps.event.addListener(map, "click", function (mouseEvent) {
+                 const latLng = mouseEvent.latLng;
+                 latitudeValue.value = latLng.getLat();
+                 longitudeValue.value = latLng.getLng();
+
+                 marker.setPosition(mouseEvent.latLng);
+                 var coord = new kakao.maps.LatLng(latLng.getLat(), latLng.getLng());
+                 var callback = function (result, status) {
+                   if (status === kakao.maps.services.Status.OK) {
+                     addressValue.value = result[0].address.address_name;
+                     console.log(result[0].address.address_name);
+                   }
+                 };
+
+                 geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
+               });
+      </script>
     </form>
+
     <!-- 지도 -->
-    <h2>지도</h2>
-    <div id="map"></div>
-
-    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=76b82f4213420a9298ccca847cdb83d1&libraries=services"></script>
-
-    <script>
-      var mapContainer = document.getElementById("map"),
-        mapOption = {
-          center: new kakao.maps.LatLng(37.5665, 126.978),
-          level: 3,
-        };
-
-      var map = new kakao.maps.Map(mapContainer, mapOption);
-      var geocoder = new kakao.maps.services.Geocoder();
-      var addressValue = document.getElementById("address");
-      var latitudeValue = document.getElementById("latitude");
-      var longitudeValue = document.getElementById("longitude");
-
-      var marker = new kakao.maps.Marker({
-        position: map.getCenter(),
-      });
-      marker.setMap(map);
-      kakao.maps.event.addListener(map, "click", function (mouseEvent) {
-        const latLng = mouseEvent.latLng;
-        latitudeValue.value = latLng.getLat();
-        longitudeValue.value = latLng.getLng();
-
-        marker.setPosition(mouseEvent.latLng);
-        var coord = new kakao.maps.LatLng(latLng.getLat(), latLng.getLng());
-        var callback = function (result, status) {
-          if (status === kakao.maps.services.Status.OK) {
-            addressValue.value = result[0].address.address_name;
-            console.log(result[0].address.address_name);
-          }
-        };
-
-        geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
-      });
-    </script>
   </body>
 </html>

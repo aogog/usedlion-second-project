@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>게시글 작성</title>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <h1>게시글 작성</h1>
+
+    <form
+      th:action="@{/test-upload}"
+      enctype="multipart/form-data"
+      method="post"
+    >
+      <p>이미지: <input type="file" name="imgfile" multiple /></p>
+
+      <button type="submit">저장</button>
+    </form>
+  </body>
+</html>

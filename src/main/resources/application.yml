@@ -13,4 +13,23 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://localhost:27017/mapinfo
+      uri: mongodb://localhost:27017/images
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB
+      max-request-size: 500MB
+
+server:
+  port: 8888
+  tomcat:
+    max-swallow-size: -1
+    max-file-upload-count: 50
+    additional-tld-skip-patterns: "*.jar"
+    max-http-form-post-size: -1
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+    org.springframework.data.mongodb.repository.query: DEBUG
+
+    org.springframework.web.multipart: DEBUG

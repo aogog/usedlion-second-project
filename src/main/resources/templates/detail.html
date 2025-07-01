@@ -39,6 +39,9 @@
     <a th:href="@{/post/edit/{id}(id=${post.postId})}">
       <button type="button">수정하기</button>
     </a>
+    <form th:action="@{/post/delete/{id}(id=${post.postId})}" method="post">
+      <button type="submit">삭제하기</button>
+    </form>
     <form th:action="@{/reaction/{id}(id=${post.postId})}" method="post">
       <input type="hidden" name="reactionType" value="LIKE" />
       <button type="submit">좋아요</button>
@@ -61,6 +64,9 @@
     </p>
 
     <p><strong>본문 내용:</strong></p>
+    <div th:each="imgId : ${imageIds}">
+      <img th:src="@{'/images/' + ${imgId}}" alt="게시글 이미지" />
+    </div>
     <div th:text="${post.content}">본문 내용</div>
 
     <p>

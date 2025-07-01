@@ -21,4 +21,8 @@ public class MapInfoService {
         return mapInfoRepository.findByPostId(postId);
     }
 
+    public void deleteByPostId(int postId) {
+        mapInfoRepository.deleteByPostId(postId);
+    }
+
 }

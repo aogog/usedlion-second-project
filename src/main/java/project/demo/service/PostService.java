@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import project.demo.entity.Comment;
 import project.demo.entity.Post;
 import project.demo.entity.Tag;
 import project.demo.repository.PostRepository;
@@ -20,6 +21,12 @@ public class PostService {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private BookService bookService;
+
+    @Autowired
+    private CommentService commentService;
 
     public Post getPostById(int postId) {
         return postRepository.findById(postId).orElse(null);
@@ -49,6 +56,10 @@ public class PostService {
     }
 
     public void deletePost(int postId) {
+        List<Comment> comments = commentService.getCommentsByPostId(postId);
+        for (Comment comment : comments) {
+            bookService.deleteBook(comment.getBook().getBookId());
+        }
         postRepository.deleteById(postId);
     }
 

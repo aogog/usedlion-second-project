@@ -49,7 +49,7 @@ public class CommentService {
         return commentReaction;
     }
 
-    public List<CommentReaction> getCommentsByPostId(int postId) {
+    public List<CommentReaction> getCommentReactionByPostId(int postId) {
         List<CommentReaction> commentReactions = new ArrayList<>();
         List<Comment> comments = commentRepository.findByPost_PostId(postId);
         for (Comment comment : comments) {
@@ -63,6 +63,11 @@ public class CommentService {
         int bookId = getCommentById(commentId).getComment().getBook().getBookId();
         commentRepository.deleteById(commentId);
         bookService.deleteBook(bookId);
+    }
+
+    public List<Comment> getCommentsByPostId(int postId) {
+        return commentRepository.findByPost_PostId(postId);
+
     }
 
 }
